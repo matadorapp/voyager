@@ -7,9 +7,8 @@ buildscript {
     }
 
     dependencies {
-        classpath(libs.plugin.hilt)
-        classpath(libs.plugin.maven)
-        classpath(libs.plugin.android)
-        classpath(libs.plugin.kotlin)
+        classpath(BuildPlugins.android)
+        classpath(BuildPlugins.kotlin)
+        classpath(BuildPlugins.hilt)
     }
 }

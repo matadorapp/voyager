@@ -29,11 +29,19 @@ android {
     buildFeatures {
         compose = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.compose_compiler_version
+    }
 }
 
 dependencies {
+    implementation(Dependencies.ktx)
+    implementation(Dependencies.stdLib)
+    implementation(Dependencies.composeRuntime)
 
-    implementation("androidx.core:core-ktx:1.8.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation(Dependencies.composeActivity)
+    implementation(Dependencies.composeLifecycleRuntime)
+
+    implementation(project(":core"))
 }

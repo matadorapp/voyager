@@ -1,6 +1,8 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("dagger.hilt.android.plugin")
+    id("kotlin-kapt")
 }
 
 android {
@@ -29,11 +31,20 @@ android {
     buildFeatures {
         compose = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.compose_compiler_version
+    }
 }
 
 dependencies {
+    implementation(Dependencies.ktx)
+    implementation(Dependencies.stdLib)
+    implementation(Dependencies.composeRuntime)
 
-    implementation("androidx.core:core-ktx:1.8.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation(Dependencies.lifecycleKtx)
+    implementation(Dependencies.lifecycleCompose)
+
+    kapt(Dependencies.hiltKapt)
+    implementation(Dependencies.hiltAndroid)
 }
