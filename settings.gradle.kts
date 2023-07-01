@@ -9,12 +9,9 @@ dependencyResolutionManagement {
         maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev" )
     }
 }
-
-plugins {
-    id("com.dropbox.focus") version "0.4.0"
-}
-
-configure<com.dropbox.focus.FocusExtension> {
-    allSettingsFileName.set("includes.gradle.kts")
-    focusFileName.set(".focus")
-}
+include(":androidx")
+include(":bottom-sheet-navigator")
+include(":core")
+include(":hilt")
+include(":navigator")
+include(":transitions")

@@ -7,13 +7,8 @@ buildscript {
     }
 
     dependencies {
-        classpath(libs.plugin.hilt)
-        classpath(libs.plugin.ktlint)
-        classpath(libs.plugin.maven)
-        classpath(libs.plugin.multiplatform.compose)
+        classpath(BuildPlugins.android)
+        classpath(BuildPlugins.kotlin)
+        classpath(BuildPlugins.hilt)
     }
-}
-
-subprojects {
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }
