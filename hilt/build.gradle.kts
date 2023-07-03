@@ -57,15 +57,18 @@ dependencies {
     implementation(Dependencies.hiltAndroid)
 }
 
+group = "com.publicapp.voyager"
+version = "1.0.0"
+
 afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("maven") {
+                from(components["release"])
+
                 groupId = "com.publicapp.voyager"
                 artifactId = "hilt"
                 version = "1.0.0"
-
-                from(components["release"])
             }
         }
     }

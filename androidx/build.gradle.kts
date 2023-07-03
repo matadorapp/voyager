@@ -22,6 +22,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -34,13 +35,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.compose_compiler_version
     }
-
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 }
 
 dependencies {
@@ -51,15 +45,18 @@ dependencies {
     implementation(project(":core"))
 }
 
+group = "com.publicapp.voyager"
+version = "1.0.0"
+
 afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                groupId = "com.publicapp.voyager"
-                artifactId = "androidx"
-                version = "1.0.0"
-
                 from(components["release"])
+
+                groupId = "com.publicapp.voyager"
+                artifactId = "bottomSheet"
+                version = "1.0.0"
             }
         }
     }

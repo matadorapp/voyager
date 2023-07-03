@@ -54,15 +54,18 @@ dependencies {
     implementation(project(":core"))
 }
 
+group = "com.publicapp.voyager"
+version = "1.0.0"
+
 afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("maven") {
+                from(components["release"])
+
                 groupId = "com.publicapp.voyager"
                 artifactId = "navigator"
                 version = "1.0.0"
-
-                from(components["release"])
             }
         }
     }
