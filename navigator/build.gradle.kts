@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("maven-publish")
 }
 
 android {
@@ -33,6 +34,13 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.compose_compiler_version
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -44,4 +52,18 @@ dependencies {
     implementation(Dependencies.composeLifecycleRuntime)
 
     implementation(project(":core"))
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = "com.publicapp.voyager"
+                artifactId = "navigator"
+                version = "1.0.0"
+
+                from(components["release"])
+            }
+        }
+    }
 }
