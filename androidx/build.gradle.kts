@@ -42,7 +42,7 @@ dependencies {
     implementation(Dependencies.stdLib)
     implementation(Dependencies.composeRuntime)
 
-    implementation(project(":core"))
+    api(project(":core"))
 }
 
 group = "com.publicapp.voyager"

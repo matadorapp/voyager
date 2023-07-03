@@ -55,8 +55,8 @@ dependencies {
     implementation(Dependencies.composeLifecycleRuntime)
     implementation(Dependencies.composeTooling)
 
-    implementation(project(":core"))
-    implementation(project(":navigator"))
+    api(project(":core"))
+    api(project(":navigator"))
 }
 
 group = "com.publicapp.voyager"
