@@ -11,4 +11,12 @@ buildscript {
         classpath(BuildPlugins.kotlin)
         classpath(BuildPlugins.hilt)
     }
+
+    allprojects {
+        repositories {
+            google()
+            mavenCentral()
+            maven("https://jitpack.io")
+        }
+    }
 }

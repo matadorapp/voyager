@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "cafe.adriel.voyager.navigator.bottomSheet"
+    namespace = "com.publicapp.voyager.navigator.bottomSheet"
     compileSdk = 33
 
     defaultConfig {
-        minSdk = 30
+        minSdk = 23
 
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -47,6 +47,6 @@ dependencies {
     implementation(Dependencies.composeLifecycleRuntime)
     implementation(Dependencies.composeTooling)
 
-        implementation(project(":core"))
-        implementation(project(":navigator"))
+    implementation(project(":core"))
+    implementation(project(":navigator"))
 }

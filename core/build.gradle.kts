@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "cafe.adriel.voyager.navigator.core"
+    namespace = "com.publicapp.voyager.navigator.core"
     compileSdk = 33
 
     defaultConfig {
-        minSdk = 30
+        minSdk = 23
 
         consumerProguardFiles("consumer-rules.pro")
     }
