@@ -58,7 +58,7 @@ dependencies {
 }
 
 group = "com.publicapp.voyager"
-version = "1.0.0"
+version = Versions.library_version
 
 afterEvaluate {
     publishing {
@@ -68,7 +68,7 @@ afterEvaluate {
 
                 groupId = "com.publicapp.voyager"
                 artifactId = "hilt"
-                version = "1.0.0"
+                version = Versions.library_version
             }
         }
     }

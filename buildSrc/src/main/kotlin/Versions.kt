@@ -1,4 +1,6 @@
 object Versions {
+    const val library_version = "1.0.1"
+
     const val gradle_version = "7.4.2"
     const val kotlin_version = "1.8.21"
 
