@@ -11,8 +11,10 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
@@ -47,8 +49,19 @@ class AndroidScreenLifecycleOwner private constructor() :
     override val savedStateRegistry: SavedStateRegistry
         get() = controller.savedStateRegistry
 
+    private val lifecycleEventObserver = object : LifecycleEventObserver {
+        override fun onStateChanged(
+            source: LifecycleOwner,
+            event: Lifecycle.Event
+        ) {
+            if (event == Lifecycle.Event.ON_CREATE) {
+                enableSavedStateHandles()
+            }
+        }
+    }
+
     init {
-        enableSavedStateHandles()
+        registry.addObserver(lifecycleEventObserver)
         if (controller.savedStateRegistry.isRestored.not()) {
             controller.performRestore(null)
         }
@@ -56,6 +69,7 @@ class AndroidScreenLifecycleOwner private constructor() :
             registry.handleLifecycleEvent(it)
         }
     }
+
 
     override fun onStart() {
         startEvents.forEach {
@@ -76,6 +90,7 @@ class AndroidScreenLifecycleOwner private constructor() :
         disposeEvents.forEach {
             registry.handleLifecycleEvent(it)
         }
+        registry.removeObserver(lifecycleEventObserver)
     }
 
     @Composable
