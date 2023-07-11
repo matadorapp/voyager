@@ -23,12 +23,15 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.enableSavedStateHandles
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.withCreated
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
 
 class AndroidScreenLifecycleOwner private constructor() :
@@ -55,15 +58,23 @@ class AndroidScreenLifecycleOwner private constructor() :
             event: Lifecycle.Event
         ) {
             if (event == Lifecycle.Event.ON_CREATE) {
+//                enableSavedStateHandles()
+//                if (controller.savedStateRegistry.isRestored.not()) {
+//                    controller.performRestore(null)
+//                }
+            }
+        }
+    }
+
+    init {
+        lifecycleScope.launch {
+            registry.withCreated {
                 enableSavedStateHandles()
                 if (controller.savedStateRegistry.isRestored.not()) {
                     controller.performRestore(null)
                 }
             }
         }
-    }
-
-    init {
         registry.addObserver(lifecycleEventObserver)
         initEvents.forEach {
             registry.handleLifecycleEvent(it)
