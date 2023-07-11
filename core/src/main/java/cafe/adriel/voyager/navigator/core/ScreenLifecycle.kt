@@ -18,13 +18,7 @@ public fun Screen.LifecycleEffect(
 @Composable
 public fun rememberScreenLifecycleOwner(
     screen: Screen
-): ScreenLifecycleOwner =
-    remember(screen.key) {
-        when (screen) {
-            is ScreenLifecycleProvider -> screen.getLifecycleOwner()
-            else -> DefaultScreenLifecycleOwner
-        }
-    }
+): ScreenLifecycleOwner =    DefaultScreenLifecycleOwner
 
 public interface ScreenLifecycleProvider {
 
