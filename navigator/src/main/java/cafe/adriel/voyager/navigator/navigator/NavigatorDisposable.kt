@@ -3,11 +3,8 @@ package cafe.adriel.voyager.navigator.navigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import cafe.adriel.voyager.navigator.core.DisposableEffectIgnoringConfiguration
+import cafe.adriel.voyager.navigator.core.ScreenLifecycleOwner
 import cafe.adriel.voyager.navigator.core.StackEvent
-
-interface NavigatorDisposable {
-    fun onDispose(navigator: Navigator)
-}
 
 private val disposableEvents: Set<StackEvent> =
     setOf(StackEvent.Pop, StackEvent.Replace)
@@ -18,7 +15,10 @@ internal fun NavigatorDisposableEffect(
 ) {
     DisposableEffectIgnoringConfiguration(navigator) {
         onDispose {
-            disposeNavigator(navigator)
+            for (screen in navigator.items) {
+                navigator.dispose(screen)
+            }
+            navigator.clearEvent()
         }
     }
 }
@@ -43,42 +43,11 @@ internal fun StepDisposableEffect(
 }
 
 @Composable
-internal fun ChildrenNavigationDisposableEffect(
-    navigator: Navigator
+internal fun LifecycleDisposableEffect(
+    lifecycleOwner: ScreenLifecycleOwner
 ) {
-    // disposing children navigators
-    DisposableEffectIgnoringConfiguration(navigator) {
-        onDispose {
-            fun disposeChildren(navigator: Navigator) {
-                disposeNavigator(navigator)
-                navigator.children.values.forEach { childNavigator ->
-                    disposeChildren(childNavigator)
-                }
-                navigator.children.clear()
-            }
-            if (navigator.parent == null || navigator.disposeBehavior.disposeNestedNavigators) {
-                navigator.children.values.forEach { childNavigator ->
-                    disposeChildren(childNavigator)
-                }
-            }
-        }
+    DisposableEffect(lifecycleOwner) {
+        lifecycleOwner.onStart()
+        onDispose(lifecycleOwner::onStop)
     }
-
-    // referencing nested navigators in parent navigator
-    DisposableEffectIgnoringConfiguration(navigator) {
-        navigator.parent?.children?.put(navigator.key, navigator)
-        onDispose {
-            if (navigator.parent?.disposeBehavior?.disposeNestedNavigators != false) {
-                navigator.parent?.children?.remove(navigator.key)
-            }
-        }
-    }
-}
-
-internal fun disposeNavigator(navigator: Navigator) {
-    for (screen in navigator.items) {
-        navigator.dispose(screen)
-    }
-    NavigatorLifecycleStore.remove(navigator)
-    navigator.clearEvent()
 }
