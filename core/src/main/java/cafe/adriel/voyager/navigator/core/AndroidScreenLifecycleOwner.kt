@@ -56,15 +56,15 @@ class AndroidScreenLifecycleOwner private constructor() :
         ) {
             if (event == Lifecycle.Event.ON_CREATE) {
                 enableSavedStateHandles()
+                if (controller.savedStateRegistry.isRestored.not()) {
+                    controller.performRestore(null)
+                }
             }
         }
     }
 
     init {
         registry.addObserver(lifecycleEventObserver)
-        if (controller.savedStateRegistry.isRestored.not()) {
-            controller.performRestore(null)
-        }
         initEvents.forEach {
             registry.handleLifecycleEvent(it)
         }
