@@ -50,6 +50,7 @@ class AndroidScreenLifecycleOwner private constructor() :
     override val lifecycle: Lifecycle = registry
 
     init {
+        controller.performAttach()
         enableSavedStateHandles()
         if (controller.savedStateRegistry.isRestored.not()) {
             controller.performRestore(null)

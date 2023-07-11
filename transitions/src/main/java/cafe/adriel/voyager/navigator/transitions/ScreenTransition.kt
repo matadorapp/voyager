@@ -8,9 +8,32 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.core.Screen
+import cafe.adriel.voyager.navigator.core.StackEvent
 import cafe.adriel.voyager.navigator.navigator.Navigator
 
 typealias ScreenTransitionContent = @Composable AnimatedVisibilityScope.(Screen) -> Unit
+
+@ExperimentalAnimationApi
+@Composable
+fun ScreenTransition(
+    navigator: Navigator,
+    enterTransition: AnimatedContentTransitionScope<Screen>.() -> ContentTransform,
+    exitTransition: AnimatedContentTransitionScope<Screen>.() -> ContentTransform,
+    modifier: Modifier = Modifier,
+    content: ScreenTransitionContent = { it.Content() }
+) {
+    ScreenTransition(
+        navigator = navigator,
+        modifier = modifier,
+        content = content,
+        transition = {
+            when (navigator.lastEvent) {
+                StackEvent.Pop -> exitTransition()
+                else -> enterTransition()
+            }
+        }
+    )
+}
 
 @ExperimentalAnimationApi
 @Composable
