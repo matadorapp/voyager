@@ -63,13 +63,13 @@ class AndroidScreenLifecycleOwner private constructor() :
     override val lifecycle: Lifecycle = registry
 
     init {
+        controller.performAttach()
         enableSavedStateHandles()
     }
 
     private fun onCreate(savedState: Bundle?) {
         check(!isCreated) { "onCreate already called" }
         isCreated = true
-        controller.performAttach()
         controller.performRestore(savedState)
         initEvents.forEach {
             registry.handleLifecycleEvent(it)
