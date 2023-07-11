@@ -16,19 +16,19 @@ import cafe.adriel.voyager.navigator.core.ThreadSafeSet
 import cafe.adriel.voyager.navigator.core.rememberScreenLifecycleOwner
 import cafe.adriel.voyager.navigator.core.toMutableStateStack
 
-typealias NavigatorContent = @Composable (navigator: Navigator) -> Unit
+public typealias NavigatorContent = @Composable (navigator: Navigator) -> Unit
 
-typealias OnBackPressed = ((currentScreen: Screen) -> Boolean)?
+public typealias OnBackPressed = ((currentScreen: Screen) -> Boolean)?
 
-val LocalNavigator: ProvidableCompositionLocal<Navigator?> =
+public val LocalNavigator: ProvidableCompositionLocal<Navigator?> =
     staticCompositionLocalOf { null }
 
-val <T> ProvidableCompositionLocal<T?>.currentOrThrow: T
+public val <T> ProvidableCompositionLocal<T?>.currentOrThrow: T
     @Composable
     get() = current ?: error("CompositionLocal is null")
 
 @Composable
-fun CurrentScreen() {
+public fun CurrentScreen() {
     val navigator = LocalNavigator.currentOrThrow
     val currentScreen = navigator.lastItem
 
@@ -38,7 +38,7 @@ fun CurrentScreen() {
 }
 
 @Composable
-fun Navigator(
+public fun Navigator(
     screen: Screen,
     disposeBehavior: NavigatorDisposeBehavior = NavigatorDisposeBehavior(),
     onBackPressed: OnBackPressed = { true },
@@ -53,7 +53,7 @@ fun Navigator(
 }
 
 @Composable
-fun Navigator(
+public fun Navigator(
     screens: List<Screen>,
     disposeBehavior: NavigatorDisposeBehavior = NavigatorDisposeBehavior(),
     onBackPressed: OnBackPressed = { true },
@@ -84,17 +84,17 @@ fun Navigator(
     }
 }
 
-class Navigator internal constructor(
+public class Navigator internal constructor(
     screens: List<Screen>,
     private val stateHolder: SaveableStateHolder,
-    val disposeBehavior: NavigatorDisposeBehavior,
-    val parent: Navigator? = null
+    public val disposeBehavior: NavigatorDisposeBehavior,
+    public val parent: Navigator? = null
 ) : Stack<Screen> by screens.toMutableStateStack(minSize = 1) {
 
-    val level: Int =
+    public val level: Int =
         parent?.level?.inc() ?: 0
 
-    val lastItem: Screen by derivedStateOf {
+    public val lastItem: Screen by derivedStateOf {
         lastItemOrNull ?: error("Navigator has no screen")
     }
 
@@ -104,12 +104,12 @@ class Navigator internal constructor(
         message = "Use 'lastItem' instead. Will be removed in 1.0.0.",
         replaceWith = ReplaceWith("lastItem")
     )
-    val last: Screen by derivedStateOf {
+    public val last: Screen by derivedStateOf {
         lastItem
     }
 
     @Composable
-    fun saveableState(
+    public fun saveableState(
         key: String,
         screen: Screen = lastItem,
         content: @Composable () -> Unit
@@ -126,7 +126,7 @@ class Navigator internal constructor(
         }
     }
 
-    fun popUntilRoot() {
+    public fun popUntilRoot() {
         popUntilRoot(this)
     }
 
@@ -153,7 +153,7 @@ class Navigator internal constructor(
     }
 }
 
-data class NavigatorDisposeBehavior(
+public data class NavigatorDisposeBehavior(
     val disposeNestedNavigators: Boolean = true,
     val disposeSteps: Boolean = true,
 )

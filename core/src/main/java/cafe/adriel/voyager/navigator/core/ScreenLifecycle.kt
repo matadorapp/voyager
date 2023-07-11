@@ -5,7 +5,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 
 @Composable
-fun Screen.LifecycleEffect(
+public fun Screen.LifecycleEffect(
     onStarted: () -> Unit = {},
     onDisposed: () -> Unit = {}
 ) {
@@ -16,7 +16,7 @@ fun Screen.LifecycleEffect(
 }
 
 @Composable
-fun rememberScreenLifecycleOwner(
+public fun rememberScreenLifecycleOwner(
     screen: Screen
 ): ScreenLifecycleOwner =
     remember(screen.key) {
@@ -26,7 +26,7 @@ fun rememberScreenLifecycleOwner(
         }
     }
 
-interface ScreenLifecycleProvider {
+public interface ScreenLifecycleProvider {
 
-    fun getLifecycleOwner(): ScreenLifecycleOwner
+    public fun getLifecycleOwner(): ScreenLifecycleOwner
 }

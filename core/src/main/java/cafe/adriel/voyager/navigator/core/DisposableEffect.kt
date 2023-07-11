@@ -17,6 +17,44 @@ fun DisposableEffectIgnoringConfiguration(
     remember(configurationChecker, key1) { DisposableEffectIgnoringConfigurationImpl(configurationChecker, effect) }
 }
 
+@Composable
+@NonRestartableComposable
+fun DisposableEffectIgnoringConfiguration(
+    key1: Any?,
+    key2: Any?,
+    effect: DisposableEffectScope.() -> DisposableEffectResult
+) {
+    val configurationChecker = getConfigurationChecker()
+    remember(configurationChecker, key1, key2) {
+        DisposableEffectIgnoringConfigurationImpl(configurationChecker, effect)
+    }
+}
+
+@Composable
+@NonRestartableComposable
+fun DisposableEffectIgnoringConfiguration(
+    key1: Any?,
+    key2: Any?,
+    key3: Any?,
+    effect: DisposableEffectScope.() -> DisposableEffectResult
+) {
+    val configurationChecker = getConfigurationChecker()
+    remember(configurationChecker, key1, key2, key3) {
+        DisposableEffectIgnoringConfigurationImpl(configurationChecker, effect)
+    }
+}
+
+@Composable
+@NonRestartableComposable
+@Suppress("ArrayReturn")
+fun DisposableEffectIgnoringConfiguration(
+    vararg keys: Any?,
+    effect: DisposableEffectScope.() -> DisposableEffectResult
+) {
+    val configurationChecker = getConfigurationChecker()
+    remember(configurationChecker, *keys) { DisposableEffectIgnoringConfigurationImpl(configurationChecker, effect) }
+}
+
 private val InternalDisposableEffectScope = DisposableEffectScope()
 
 private class DisposableEffectIgnoringConfigurationImpl(

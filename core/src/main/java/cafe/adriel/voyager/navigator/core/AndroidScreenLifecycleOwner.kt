@@ -47,10 +47,7 @@ class AndroidScreenLifecycleOwner private constructor() :
     override val savedStateRegistry: SavedStateRegistry
         get() = controller.savedStateRegistry
 
-    override val lifecycle: Lifecycle = registry
-
     init {
-        controller.performAttach()
         enableSavedStateHandles()
         if (controller.savedStateRegistry.isRestored.not()) {
             controller.performRestore(null)
@@ -99,7 +96,11 @@ class AndroidScreenLifecycleOwner private constructor() :
         }
     }
 
-    override val viewModelStore: ViewModelStore = store
+    override val lifecycle: Lifecycle =
+        registry
+
+    override val viewModelStore: ViewModelStore =
+        store
 
     override val defaultViewModelProviderFactory: ViewModelProvider.Factory
         get() = SavedStateViewModelFactory(

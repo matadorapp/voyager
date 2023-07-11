@@ -10,7 +10,7 @@ private typealias DependencyInstance = Any
 private typealias DependencyOnDispose = (Any) -> Unit
 private typealias Dependency = Pair<DependencyInstance, DependencyOnDispose>
 
-object ScreenModelStore {
+public object ScreenModelStore {
 
     @PublishedApi
     internal val screenModels: MutableMap<ScreenModelKey, ScreenModel> = ThreadSafeMap()
@@ -26,6 +26,17 @@ object ScreenModelStore {
         "${screen.key}:${T::class.qualifiedName}:${tag ?: "default"}"
 
     @PublishedApi
+    internal fun getDependencyKey(screenModel: ScreenModel, name: String): DependencyKey =
+        screenModels
+            .firstNotNullOfOrNull {
+                if (it.value == screenModel) it.key
+                else null
+            }
+            ?: lastScreenModelKey.value
+                ?.let { "$it:$name" }
+            ?: "standalone:$name"
+
+    @PublishedApi
     internal inline fun <reified T : ScreenModel> getOrPut(
         screen: Screen,
         tag: String?,
@@ -36,7 +47,20 @@ object ScreenModelStore {
         return screenModels.getOrPut(key, factory) as T
     }
 
-    fun remove(screen: Screen) {
+    public inline fun <reified T : Any> getOrPutDependency(
+        screenModel: ScreenModel,
+        name: String,
+        noinline onDispose: @DisallowComposableCalls (T) -> Unit = {},
+        noinline factory: @DisallowComposableCalls (DependencyKey) -> T
+    ): T {
+        val key = getDependencyKey(screenModel, name)
+
+        return dependencies
+            .getOrPut(key) { (factory(key) to onDispose) as Dependency }
+            .first as T
+    }
+
+    public fun remove(screen: Screen) {
         screenModels.onEach(screen) { key ->
             screenModels[key]?.onDispose()
             screenModels -= key
