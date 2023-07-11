@@ -26,14 +26,6 @@ fun rememberScreenLifecycleOwner(
         }
     }
 
-@Composable
-fun getNavigatorScreenLifecycleProvider(screen: Screen): List<ScreenLifecycleContentProvider> {
-    val navigatorScreenLifecycleProvider = LocalNavigatorScreenLifecycleProvider.current
-    return remember(screen.key) {
-        navigatorScreenLifecycleProvider.provide(screen)
-    }
-}
-
 interface ScreenLifecycleProvider {
 
     fun getLifecycleOwner(): ScreenLifecycleOwner
