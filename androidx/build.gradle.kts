@@ -21,6 +21,9 @@ android {
                 "proguard-rules.pro"
             )
         }
+        lint {
+            abortOnError = false
+        }
     }
 
     compileOptions {

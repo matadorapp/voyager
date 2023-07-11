@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -40,10 +41,10 @@ fun SlideTransition(
 
             when (orientation) {
                 SlideOrientation.Horizontal ->
-                    slideInHorizontally(animationSpec, initialOffset) with
+                    slideInHorizontally(animationSpec, initialOffset) togetherWith
                             slideOutHorizontally(animationSpec, targetOffset)
                 SlideOrientation.Vertical ->
-                    slideInVertically(animationSpec, initialOffset) with
+                    slideInVertically(animationSpec, initialOffset) togetherWith
                             slideOutVertically(animationSpec, targetOffset)
             }
         }

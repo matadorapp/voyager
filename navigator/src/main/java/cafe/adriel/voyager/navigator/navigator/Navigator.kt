@@ -6,18 +6,15 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.staticCompositionLocalOf
-import cafe.adriel.voyager.navigator.core.MultipleProvideBeforeScreenContent
 import cafe.adriel.voyager.navigator.core.Screen
 import cafe.adriel.voyager.navigator.core.ScreenLifecycleStore
 import cafe.adriel.voyager.navigator.core.ScreenModelStore
 import cafe.adriel.voyager.navigator.core.Stack
 import cafe.adriel.voyager.navigator.core.ThreadSafeMap
 import cafe.adriel.voyager.navigator.core.ThreadSafeSet
-import cafe.adriel.voyager.navigator.core.getNavigatorScreenLifecycleProvider
 import cafe.adriel.voyager.navigator.core.rememberScreenLifecycleOwner
 import cafe.adriel.voyager.navigator.core.toMutableStateStack
 
@@ -139,13 +136,7 @@ class Navigator constructor(
         }
 
         val lifecycleOwner = rememberScreenLifecycleOwner(screen)
-        val navigatorScreenLifecycleOwners = getNavigatorScreenLifecycleProvider(screen)
-
-        val composed = remember(lifecycleOwner, navigatorScreenLifecycleOwners) {
-            listOf(lifecycleOwner) + navigatorScreenLifecycleOwners
-        }
-        MultipleProvideBeforeScreenContent(
-            screenLifecycleContentProviders = composed,
+        lifecycleOwner.ProvideBeforeScreenContent(
             provideSaveableState = { suffix, content -> provideSaveableState(suffix, content) },
             content = {
                 stateHolder.SaveableStateProvider(stateKey, content)
