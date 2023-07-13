@@ -1,3 +1,15 @@
+### Releasing internally
+- Make your changes, and push them to the main branch
+- Draft a new release
+![image](https://github.com/matadorapp/voyager/assets/14089164/840628b2-ad51-474e-acc6-b8097bd2793b)
+- Publish the release
+- Go to our Android repo
+- Bump voyager versions to the one you just released
+- Press sync with Gradle
+- The version will now be built and published by Jitpack. Usually takes 5-10 minutes. Check status at https://jitpack.io/#matadorapp/voyager
+
+--------
+### Voyager documentation
 [![Maven metadata URL](https://img.shields.io/maven-metadata/v?color=blue&metadataUrl=https://s01.oss.sonatype.org/service/local/repo_groups/public/content/cafe/adriel/voyager/voyager-core/maven-metadata.xml&style=for-the-badge)](https://repo.maven.apache.org/maven2/cafe/adriel/voyager/)
 [![Android API](https://img.shields.io/badge/api-21%2B-brightgreen.svg?style=for-the-badge)](https://android-arsenal.com/api?level=21)
 [![kotlin](https://img.shields.io/github/languages/top/adrielcafe/voyager.svg?style=for-the-badge&color=blueviolet)](https://kotlinlang.org/)
