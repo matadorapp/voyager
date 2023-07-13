@@ -1,5 +1,5 @@
 object Versions {
-    const val library_version = "1.0.3-beta13"
+    const val library_version = "1.0.4"
 
     const val gradle_version = "7.4.2"
     const val kotlin_version = "1.8.21"
@@ -11,7 +11,7 @@ object Versions {
     const val coroutine_version = "1.7.1"
 
     const val compose_compiler_version = "1.4.7"
-    const val compose_version = "1.5.0-beta02"
+    const val compose_version = "1.4.3"
     const val compose_activity_version = "1.7.2"
     const val compose_runtime_version = "2.6.1"
 
