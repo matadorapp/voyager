@@ -88,8 +88,6 @@ class AndroidScreenLifecycleOwner private constructor() :
     private fun onCreate(savedState: Bundle?) {
         check(!isCreated) { "onCreate already called" }
         isCreated = true
-        controller.performAttach()
-        enableSavedStateHandles()
         controller.performRestore(savedState)
         initEvents.forEach {
             lifecycle.handleLifecycleEvent(it)
@@ -141,10 +139,7 @@ class AndroidScreenLifecycleOwner private constructor() :
 
     @Composable
     private fun getHooks(): List<ProvidedValue<*>> {
-        atomicContext.compareAndSet(
-            null,
-            LocalContext.current
-        )
+        atomicContext.compareAndSet(null, LocalContext.current)
 
         return remember(this) {
             listOf(
@@ -186,19 +181,17 @@ class AndroidScreenLifecycleOwner private constructor() :
         }
     }
 
-    private tailrec fun Context.getActivity(): Activity? =
-        when (this) {
-            is Activity -> this
-            is ContextWrapper -> baseContext.getActivity()
-            else -> null
-        }
+    private tailrec fun Context.getActivity(): Activity? = when (this) {
+        is Activity -> this
+        is ContextWrapper -> baseContext.getActivity()
+        else -> null
+    }
 
-    private tailrec fun Context.getApplication(): Application? =
-        when (this) {
-            is Application -> this
-            is ContextWrapper -> baseContext.getApplication()
-            else -> null
-        }
+    private tailrec fun Context.getApplication(): Application? = when (this) {
+        is Application -> this
+        is ContextWrapper -> baseContext.getApplication()
+        else -> null
+    }
 
     companion object {
 
