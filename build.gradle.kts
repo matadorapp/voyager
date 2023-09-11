@@ -7,18 +7,16 @@ buildscript {
     }
 
     dependencies {
-        classpath(libs.plugin.hilt)
-        classpath(libs.plugin.ktlint)
-        classpath(libs.plugin.maven)
-        classpath(libs.plugin.multiplatform.compose)
+        classpath(BuildPlugins.android)
+        classpath(BuildPlugins.kotlin)
+        classpath(BuildPlugins.hilt)
     }
-}
 
-subprojects {
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-
-    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-        version.set("0.47.1")
-        disabledRules.set(setOf("filename"))
+    allprojects {
+        repositories {
+            google()
+            mavenCentral()
+            maven("https://jitpack.io")
+        }
     }
 }
