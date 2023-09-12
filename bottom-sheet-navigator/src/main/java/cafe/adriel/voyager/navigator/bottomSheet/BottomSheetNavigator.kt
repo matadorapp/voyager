@@ -62,13 +62,10 @@ fun BottomSheetNavigator(
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmValueChange = { state ->
-            when (state) {
-                ModalBottomSheetValue.Hidden -> {
-                    hideBottomSheet?.hide()
-                    false
-                }
-                else -> true
+            if (state == ModalBottomSheetValue.Hidden) {
+                hideBottomSheet?.hide()
             }
+            true
         },
         skipHalfExpanded = skipHalfExpanded,
         animationSpec = animationSpec
