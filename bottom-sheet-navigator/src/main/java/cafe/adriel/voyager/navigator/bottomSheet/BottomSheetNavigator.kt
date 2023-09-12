@@ -16,8 +16,11 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,14 +57,14 @@ fun BottomSheetNavigator(
     sheetContent: BottomSheetNavigatorContent = { CurrentScreen() },
     content: BottomSheetNavigatorContent
 ) {
-    var hideBottomSheet: (() -> Unit)? = null
+    var hideBottomSheet by remember { mutableStateOf<BottomSheetNavigator?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmValueChange = { state ->
             when (state) {
                 ModalBottomSheetValue.Hidden -> {
-                    hideBottomSheet?.invoke()
+                    hideBottomSheet?.hide()
                     false
                 }
                 else -> true
@@ -78,9 +81,10 @@ fun BottomSheetNavigator(
     ) { navigator ->
         val bottomSheetNavigator = remember(navigator, sheetState, coroutineScope) {
             BottomSheetNavigator(navigator, sheetState, coroutineScope)
+                .apply {
+                    hideBottomSheet = this
+                }
         }
-
-        hideBottomSheet = bottomSheetNavigator::hide
 
         CompositionLocalProvider(LocalBottomSheetNavigator provides bottomSheetNavigator) {
             ModalBottomSheetLayout(
