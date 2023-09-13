@@ -1,7 +1,7 @@
 object Versions {
     const val compile_sdk_version = 34
 
-    const val library_version = "1.0.6"
+    const val library_version = "1.0.7"
 
     const val gradle_version = "7.4.2"
     const val kotlin_version = "1.9.10"
