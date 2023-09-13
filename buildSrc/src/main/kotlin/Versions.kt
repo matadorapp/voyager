@@ -8,7 +8,8 @@ object Versions {
 
     const val ktx_version = "1.12.0"
 
-    const val hilt_version = "2.47"
+    const val hilt_version = "2.48"
+    const val ksp_version = "1.9.10-1.0.13"
 
     const val coroutine_version = "1.7.1"
 

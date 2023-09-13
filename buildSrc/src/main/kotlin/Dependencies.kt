@@ -2,6 +2,7 @@ object BuildPlugins {
     val android = "com.android.tools.build:gradle:${Versions.gradle_version}"
     val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin_version}"
     val hilt = "com.google.dagger:hilt-android-gradle-plugin:${Versions.hilt_version}"
+    val ksp = "com.google.devtools.ksp:symbol-processing-gradle-plugin:${Versions.ksp_version}"
 }
 
 object Dependencies {
@@ -20,6 +21,6 @@ object Dependencies {
     val lifecycleKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle_version}"
     val lifecycleCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle_version}"
 
-    val hiltKapt = "com.google.dagger:hilt-compiler:${Versions.hilt_version}"
+    val hiltKsp = "com.google.dagger:hilt-compiler:${Versions.hilt_version}"
     val hiltAndroid = "com.google.dagger:hilt-android:${Versions.hilt_version}"
 }
