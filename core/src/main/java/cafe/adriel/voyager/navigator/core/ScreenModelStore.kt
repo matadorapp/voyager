@@ -23,25 +23,7 @@ object ScreenModelStore {
 
     @PublishedApi
     internal inline fun <reified T : ScreenModel> getKey(screen: Screen, tag: String?): ScreenModelKey =
-//<<<<<<< HEAD:voyager-core/src/commonMain/kotlin/cafe/adriel/voyager/core/model/ScreenModelStore.kt
-//        "${screen.key}:${T::class.multiplatformName}:${tag ?: "default"}"
-//
-//    @PublishedApi
-//    internal fun getDependencyKey(screenModel: ScreenModel, name: String): DependencyKey =
-//        screenModels
-//            .firstNotNullOfOrNull {
-//                if (it.value == screenModel) {
-//                    it.key
-//                } else {
-//                    null
-//                }
-//            }
-//            ?: lastScreenModelKey.value
-//                ?.let { "$it:$name" }
-//            ?: "standalone:$name"
-//=======
         "${screen.key}:${T::class.qualifiedName}:${tag ?: "default"}"
-//>>>>>>> main:core/src/main/java/cafe/adriel/voyager/navigator/core/ScreenModelStore.kt
 
     @PublishedApi
     internal inline fun <reified T : ScreenModel> getOrPut(
