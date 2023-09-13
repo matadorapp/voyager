@@ -15,7 +15,7 @@ object Dependencies {
     val composeFoundation = "androidx.compose.foundation:foundation:${Versions.compose_version}"
     val composeMaterial = "androidx.compose.material:material:${Versions.compose_version}"
     val composeActivity = "androidx.activity:activity-compose:${Versions.compose_activity_version}"
-    val composeLifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-compose:${Versions.compose_runtime_version}"
+    val composeLifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-compose:${Versions.compose_lifecycle_runtime_version}"
 
     val lifecycleKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle_version}"
     val lifecycleCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle_version}"

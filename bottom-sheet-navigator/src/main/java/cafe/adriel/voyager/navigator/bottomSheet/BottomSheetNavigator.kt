@@ -1,5 +1,6 @@
 package cafe.adriel.voyager.navigator.bottomSheet
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -9,13 +10,17 @@ import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.contentColorFor
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,15 +50,25 @@ fun BottomSheetNavigator(
     sheetElevation: Dp = ModalBottomSheetDefaults.Elevation,
     sheetBackgroundColor: Color = MaterialTheme.colors.surface,
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
+    sheetGesturesEnabled: Boolean = true,
     skipHalfExpanded: Boolean = true,
+    animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec,
     key: String = compositionUniqueId(),
     sheetContent: BottomSheetNavigatorContent = { CurrentScreen() },
     content: BottomSheetNavigatorContent
 ) {
+    var hideBottomSheet by remember { mutableStateOf<BottomSheetNavigator?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = skipHalfExpanded
+        confirmValueChange = { state ->
+            if (state == ModalBottomSheetValue.Hidden) {
+                hideBottomSheet?.hide()
+            }
+            true
+        },
+        skipHalfExpanded = skipHalfExpanded,
+        animationSpec = animationSpec
     )
 
     Navigator(
@@ -61,16 +76,11 @@ fun BottomSheetNavigator(
         onBackPressed = null,
         key = key
     ) { navigator ->
-        val bottomSheetNavigator = remember(
-            navigator,
-            sheetState,
-            coroutineScope
-        ) {
-            BottomSheetNavigator(
-                navigator,
-                sheetState,
-                coroutineScope
-            )
+        val bottomSheetNavigator = remember(navigator, sheetState, coroutineScope) {
+            BottomSheetNavigator(navigator, sheetState, coroutineScope)
+                .apply {
+                    hideBottomSheet = this
+                }
         }
 
         CompositionLocalProvider(LocalBottomSheetNavigator provides bottomSheetNavigator) {
@@ -82,6 +92,7 @@ fun BottomSheetNavigator(
                 sheetElevation = sheetElevation,
                 sheetBackgroundColor = sheetBackgroundColor,
                 sheetContentColor = sheetContentColor,
+                sheetGesturesEnabled = sheetGesturesEnabled,
                 sheetContent = {
                     BackHandler(enabled = sheetState.isVisible) {
                         if (bottomSheetNavigator.pop().not() && hideOnBackPress) {
@@ -105,6 +116,9 @@ class BottomSheetNavigator internal constructor(
     private val coroutineScope: CoroutineScope
 ) : Stack<Screen> by navigator {
 
+    public val isVisible: Boolean
+        get() = sheetState.isVisible
+
     fun show(screen: Screen) {
         coroutineScope.launch {
             replaceAll(screen)
@@ -114,8 +128,10 @@ class BottomSheetNavigator internal constructor(
 
     fun hide() {
         coroutineScope.launch {
-            sheetState.hide()
-            replaceAll(HiddenBottomSheetScreen)
+            if (isVisible) {
+                sheetState.hide()
+                replaceAll(HiddenBottomSheetScreen)
+            }
         }
     }
 }

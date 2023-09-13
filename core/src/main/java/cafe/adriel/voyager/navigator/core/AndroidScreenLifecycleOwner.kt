@@ -45,9 +45,9 @@ class AndroidScreenLifecycleOwner private constructor() :
     SavedStateRegistryOwner,
     HasDefaultViewModelProviderFactory {
 
-    private val registry = LifecycleRegistry(this)
+    override val lifecycle: LifecycleRegistry = LifecycleRegistry(this)
 
-    private val store = ViewModelStore()
+    override val viewModelStore: ViewModelStore = ViewModelStore()
 
     private val atomicContext = AtomicReference<Context>()
 
@@ -60,22 +60,43 @@ class AndroidScreenLifecycleOwner private constructor() :
     override val savedStateRegistry: SavedStateRegistry
         get() = controller.savedStateRegistry
 
-    override val lifecycle: Lifecycle = registry
+    override val defaultViewModelProviderFactory: ViewModelProvider.Factory
+        get() = SavedStateViewModelFactory(
+            application = atomicContext.get()?.applicationContext?.getApplication(),
+            owner = this
+        )
+
+    override val defaultViewModelCreationExtras: CreationExtras
+        get() = MutableCreationExtras().apply {
+            val application = atomicContext.get()?.applicationContext?.getApplication()
+            if (application != null) {
+                set(AndroidViewModelFactory.APPLICATION_KEY, application)
+            }
+            set(SAVED_STATE_REGISTRY_OWNER_KEY, this@AndroidScreenLifecycleOwner)
+            set(VIEW_MODEL_STORE_OWNER_KEY, this@AndroidScreenLifecycleOwner)
+
+            /* TODO if (getArguments() != null) {
+                extras.set<Bundle>(DEFAULT_ARGS_KEY, getArguments())
+            }*/
+        }
+
+    init {
+        controller.performAttach()
+        enableSavedStateHandles()
+    }
 
     private fun onCreate(savedState: Bundle?) {
         check(!isCreated) { "onCreate already called" }
         isCreated = true
-        controller.performAttach()
-        enableSavedStateHandles()
         controller.performRestore(savedState)
         initEvents.forEach {
-            registry.handleLifecycleEvent(it)
+            lifecycle.handleLifecycleEvent(it)
         }
     }
 
     private fun onStart() {
         startEvents.forEach {
-            registry.handleLifecycleEvent(it)
+            lifecycle.handleLifecycleEvent(it)
         }
     }
 
@@ -83,7 +104,7 @@ class AndroidScreenLifecycleOwner private constructor() :
         deactivateLifecycleListener?.invoke()
         deactivateLifecycleListener = null
         stopEvents.forEach {
-            registry.handleLifecycleEvent(it)
+            lifecycle.handleLifecycleEvent(it)
         }
     }
 
@@ -108,7 +129,7 @@ class AndroidScreenLifecycleOwner private constructor() :
         if (context is Activity && context.isChangingConfigurations) return
         viewModelStore.clear()
         disposeEvents.forEach {
-            registry.handleLifecycleEvent(it)
+            lifecycle.handleLifecycleEvent(it)
         }
     }
 
@@ -118,25 +139,16 @@ class AndroidScreenLifecycleOwner private constructor() :
 
     @Composable
     private fun getHooks(): List<ProvidedValue<*>> {
-        atomicContext.compareAndSet(
-            null,
-            LocalContext.current
-        )
+        atomicContext.compareAndSet(null, LocalContext.current)
 
         return remember(this) {
             listOf(
                 LocalLifecycleOwner provides this,
                 LocalViewModelStoreOwner provides this,
-                LocalSavedStateRegistryOwner provides this,
+                LocalSavedStateRegistryOwner provides this
             )
         }
     }
-
-    override val viewModelStore: ViewModelStore = store
-    override val defaultViewModelProviderFactory: ViewModelProvider.Factory = SavedStateViewModelFactory(
-        application = atomicContext.get()?.applicationContext?.getApplication(),
-        owner = this
-    )
 
     private fun registerLifecycleListener(outState: Bundle) {
         val activity = atomicContext.get()?.getActivity()
@@ -151,29 +163,6 @@ class AndroidScreenLifecycleOwner private constructor() :
             deactivateLifecycleListener = { lifecycle.removeObserver(observer) }
         }
     }
-
-    override val defaultViewModelCreationExtras: CreationExtras =
-        MutableCreationExtras().apply {
-            val application = atomicContext.get()?.applicationContext?.getApplication()
-            if (application != null) {
-                set(
-                    AndroidViewModelFactory.APPLICATION_KEY,
-                    application
-                )
-            }
-            set(
-                SAVED_STATE_REGISTRY_OWNER_KEY,
-                this@AndroidScreenLifecycleOwner
-            )
-            set(
-                VIEW_MODEL_STORE_OWNER_KEY,
-                this@AndroidScreenLifecycleOwner
-            )
-
-            /* TODO if (getArguments() != null) {
-                extras.set<Bundle>(DEFAULT_ARGS_KEY, getArguments())
-            }*/
-        }
 
     @Composable
     private fun LifecycleDisposableEffect() {
@@ -192,24 +181,22 @@ class AndroidScreenLifecycleOwner private constructor() :
         }
     }
 
-    private tailrec fun Context.getActivity(): Activity? =
-        when (this) {
-            is Activity -> this
-            is ContextWrapper -> baseContext.getActivity()
-            else -> null
-        }
+    private tailrec fun Context.getActivity(): Activity? = when (this) {
+        is Activity -> this
+        is ContextWrapper -> baseContext.getActivity()
+        else -> null
+    }
 
-    private tailrec fun Context.getApplication(): Application? =
-        when (this) {
-            is Application -> this
-            is ContextWrapper -> baseContext.getApplication()
-            else -> null
-        }
+    private tailrec fun Context.getApplication(): Application? = when (this) {
+        is Application -> this
+        is ContextWrapper -> baseContext.getApplication()
+        else -> null
+    }
 
     companion object {
 
         private val initEvents = arrayOf(
-            Lifecycle.Event.ON_CREATE,
+            Lifecycle.Event.ON_CREATE
         )
 
         private val startEvents = arrayOf(
