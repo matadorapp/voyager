@@ -1,6 +1,5 @@
 package cafe.adriel.voyager.navigator.transitions
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
@@ -9,14 +8,13 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import cafe.adriel.voyager.navigator.core.StackEvent
 import cafe.adriel.voyager.navigator.navigator.Navigator
 
-@ExperimentalAnimationApi
 @Composable
 fun SlideTransition(
     navigator: Navigator,
@@ -40,11 +38,11 @@ fun SlideTransition(
 
             when (orientation) {
                 SlideOrientation.Horizontal ->
-                    slideInHorizontally(animationSpec, initialOffset) with
-                            slideOutHorizontally(animationSpec, targetOffset)
+                    slideInHorizontally(animationSpec, initialOffset) togetherWith
+                        slideOutHorizontally(animationSpec, targetOffset)
                 SlideOrientation.Vertical ->
-                    slideInVertically(animationSpec, initialOffset) with
-                            slideOutVertically(animationSpec, targetOffset)
+                    slideInVertically(animationSpec, initialOffset) togetherWith
+                        slideOutVertically(animationSpec, targetOffset)
             }
         }
     )

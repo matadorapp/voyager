@@ -37,6 +37,10 @@ class SnapshotStateStack<Item>(
         stateStack.lastOrNull()
     }
 
+    @Deprecated(
+        message = "Use 'lastItemOrNull' instead. Will be removed in 1.0.0.",
+        replaceWith = ReplaceWith("lastItemOrNull")
+    )
     override val lastOrNull: Item? by derivedStateOf {
         lastItemOrNull
     }
@@ -63,9 +67,12 @@ class SnapshotStateStack<Item>(
         lastEvent = StackEvent.Push
     }
 
-    override infix fun replace(item: Item) {
-        if (stateStack.isEmpty()) push(item)
-        else stateStack[stateStack.lastIndex] = item
+    public override infix fun replace(item: Item) {
+        if (stateStack.isEmpty()) {
+            push(item)
+        } else {
+            stateStack[stateStack.lastIndex] = item
+        }
         lastEvent = StackEvent.Replace
     }
 

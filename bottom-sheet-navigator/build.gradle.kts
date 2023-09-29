@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.publicapp.voyager.navigator.bottomSheet"
-    compileSdk = 33
+    compileSdk = Versions.compile_sdk_version
 
     defaultConfig {
         minSdk = 23
