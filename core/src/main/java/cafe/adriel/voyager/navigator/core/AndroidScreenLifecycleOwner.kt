@@ -4,12 +4,14 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
+import androidx.lifecycle.DEFAULT_ARGS_KEY
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -65,6 +67,18 @@ class AndroidScreenLifecycleOwner private constructor() :
                 extras.set<Bundle>(DEFAULT_ARGS_KEY, getArguments())
             }*/
         }
+
+    fun getViewModelCreationExtras(
+        extras: Bundle? = null
+    ) : CreationExtras {
+        return defaultViewModelCreationExtras.also {
+            MutableCreationExtras(it).apply {
+                if (extras != null) {
+                    set(DEFAULT_ARGS_KEY, extras)
+                }
+            }
+        }
+    }
 
     init {
         controller.performAttach()
