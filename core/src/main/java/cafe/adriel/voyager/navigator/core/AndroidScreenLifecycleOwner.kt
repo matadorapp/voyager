@@ -4,21 +4,13 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
-import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.ProvidedValue
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
-import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
@@ -51,10 +43,6 @@ class AndroidScreenLifecycleOwner private constructor() :
 
     private val controller = SavedStateRegistryController.create(this)
 
-    private var deactivateLifecycleListener: (() -> Unit)? = null
-
-    private var isCreated: Boolean by mutableStateOf(false)
-
     override val savedStateRegistry: SavedStateRegistry
         get() = controller.savedStateRegistry
 
@@ -83,29 +71,6 @@ class AndroidScreenLifecycleOwner private constructor() :
         enableSavedStateHandles()
     }
 
-    private fun onCreate(savedState: Bundle?) {
-        check(!isCreated) { "onCreate already called" }
-        isCreated = true
-        controller.performRestore(savedState)
-        initEvents.forEach {
-            lifecycle.handleLifecycleEvent(it)
-        }
-    }
-
-    private fun onStart() {
-        startEvents.forEach {
-            lifecycle.handleLifecycleEvent(it)
-        }
-    }
-
-    private fun onStop() {
-        deactivateLifecycleListener?.invoke()
-        deactivateLifecycleListener = null
-        stopEvents.forEach {
-            lifecycle.handleLifecycleEvent(it)
-        }
-    }
-
     @Composable
     override fun ProvideBeforeScreenContent(
         provideSaveableState: @Composable (suffixKey: String, content: @Composable () -> Unit) -> Unit,
@@ -121,13 +86,6 @@ class AndroidScreenLifecycleOwner private constructor() :
         val context = atomicContext.getAndSet(null) ?: return
         if (context is Activity && context.isChangingConfigurations) return
         viewModelStore.clear()
-        disposeEvents.forEach {
-            lifecycle.handleLifecycleEvent(it)
-        }
-    }
-
-    private fun performSave(outState: Bundle) {
-        controller.performSave(outState)
     }
 
     @Composable
@@ -142,43 +100,6 @@ class AndroidScreenLifecycleOwner private constructor() :
         }
     }
 
-    private fun registerLifecycleListener(outState: Bundle) {
-        val activity = atomicContext.get()?.getActivity()
-        if (activity != null && activity is LifecycleOwner) {
-            val observer = object : DefaultLifecycleObserver {
-                override fun onStop(owner: LifecycleOwner) {
-                    performSave(outState)
-                }
-            }
-            val lifecycle = activity.lifecycle
-            lifecycle.addObserver(observer)
-            deactivateLifecycleListener = { lifecycle.removeObserver(observer) }
-        }
-    }
-
-    @Composable
-    private fun LifecycleDisposableEffect() {
-        val savedState = rememberSaveable { Bundle() }
-        if (!isCreated) {
-            onCreate(savedState) // do this in the UI thread to force it to be called before anything else
-        }
-
-        DisposableEffect(this) {
-            registerLifecycleListener(savedState)
-            onStart()
-            onDispose {
-                performSave(savedState)
-                onStop()
-            }
-        }
-    }
-
-    private tailrec fun Context.getActivity(): Activity? = when (this) {
-        is Activity -> this
-        is ContextWrapper -> baseContext.getActivity()
-        else -> null
-    }
-
     private tailrec fun Context.getApplication(): Application? = when (this) {
         is Application -> this
         is ContextWrapper -> baseContext.getApplication()
@@ -186,25 +107,6 @@ class AndroidScreenLifecycleOwner private constructor() :
     }
 
     companion object {
-
-        private val initEvents = arrayOf(
-            Lifecycle.Event.ON_CREATE
-        )
-
-        private val startEvents = arrayOf(
-            Lifecycle.Event.ON_START,
-            Lifecycle.Event.ON_RESUME
-        )
-
-        private val stopEvents = arrayOf(
-            Lifecycle.Event.ON_PAUSE,
-            Lifecycle.Event.ON_STOP
-        )
-
-        private val disposeEvents = arrayOf(
-            Lifecycle.Event.ON_DESTROY
-        )
-
         fun get(screen: Screen): ScreenLifecycleOwner {
             return ScreenLifecycleStore.register(screen) { AndroidScreenLifecycleOwner() }
         }

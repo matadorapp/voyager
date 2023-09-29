@@ -1,7 +1,6 @@
 package cafe.adriel.voyager.navigator.androidx
 
 import cafe.adriel.voyager.navigator.core.AndroidScreenLifecycleOwner
-import cafe.adriel.voyager.navigator.core.DefaultScreenLifecycleOwner
 import cafe.adriel.voyager.navigator.core.Screen
 import cafe.adriel.voyager.navigator.core.ScreenKey
 import cafe.adriel.voyager.navigator.core.ScreenLifecycleOwner
