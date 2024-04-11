@@ -19,5 +19,8 @@ buildscript {
             mavenCentral()
             maven("https://jitpack.io")
         }
+
+        // https://issuetracker.google.com/issues/328871352
+        gradle.startParameter.excludedTaskNames.addAll(listOf(":buildSrc:testClasses"))
     }
 }
