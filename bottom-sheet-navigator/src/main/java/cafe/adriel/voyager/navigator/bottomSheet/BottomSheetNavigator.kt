@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.core.Screen
 import cafe.adriel.voyager.navigator.core.Stack
+import cafe.adriel.voyager.navigator.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.navigator.Navigator
 import cafe.adriel.voyager.navigator.navigator.compositionUniqueId
 import kotlinx.coroutines.CoroutineScope
@@ -49,7 +50,7 @@ fun BottomSheetNavigator(
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
     skipHalfExpanded: Boolean = true,
     key: String = compositionUniqueId(),
-    sheetContent: BottomSheetNavigatorContent,
+    sheetContent: BottomSheetNavigatorContent = { CurrentScreen() },
     content: BottomSheetNavigatorContent
 ) {
     var hideBottomSheet by remember { mutableStateOf<BottomSheetNavigator?>(null) }
