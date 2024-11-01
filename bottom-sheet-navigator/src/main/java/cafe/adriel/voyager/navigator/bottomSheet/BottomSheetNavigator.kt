@@ -78,6 +78,8 @@ fun BottomSheetNavigator(
         }
 
         CompositionLocalProvider(LocalBottomSheetNavigator provides bottomSheetNavigator) {
+            content(bottomSheetNavigator)
+
             ModalBottomSheet(
                 modifier = modifier,
                 scrimColor = scrimColor,
@@ -99,8 +101,6 @@ fun BottomSheetNavigator(
                 },
             )
         }
-
-        content(bottomSheetNavigator)
     }
 }
 
