@@ -49,6 +49,7 @@ fun BottomSheetNavigator(
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
     skipHalfExpanded: Boolean = true,
     key: String = compositionUniqueId(),
+    sheetContent: BottomSheetNavigatorContent,
     content: BottomSheetNavigatorContent
 ) {
     var hideBottomSheet by remember { mutableStateOf<BottomSheetNavigator?>(null) }
@@ -93,10 +94,12 @@ fun BottomSheetNavigator(
                             bottomSheetNavigator.hide()
                         }
                     }
-                    content(bottomSheetNavigator)
+                    sheetContent(bottomSheetNavigator)
                 },
             )
         }
+
+        content()
     }
 }
 
