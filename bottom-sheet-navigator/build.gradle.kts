@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("maven-publish")
+    id("org.jetbrains.kotlin.plugin.compose") version Versions.compose_plugin_version
 }
 
 android {
@@ -31,16 +32,16 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = Versions.compose_compiler_version
-    }
-
     publishing {
         singleVariant("release") {
             withSourcesJar()
             withJavadocJar()
         }
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {

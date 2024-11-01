@@ -10,10 +10,8 @@ object Versions {
 
     const val hilt_version = "2.51.1"
     const val ksp_version = "2.0.21-1.0.26"
+    const val compose_plugin_version = "2.0.21"
 
-    const val coroutine_version = "1.7.1"
-
-    const val compose_compiler_version = "1.5.15"
     const val compose_version = "1.7.5"
     const val compose_material_version = "1.3.1"
     const val compose_activity_version = "1.9.3"

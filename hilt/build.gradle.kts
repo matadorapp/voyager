@@ -4,6 +4,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("maven-publish")
+    id("org.jetbrains.kotlin.plugin.compose") version Versions.compose_plugin_version
 }
 
 android {
@@ -33,16 +34,16 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = Versions.compose_compiler_version
-    }
-
     publishing {
         singleVariant("release") {
             withSourcesJar()
             withJavadocJar()
         }
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
