@@ -1,18 +1,16 @@
 package cafe.adriel.voyager.navigator.bottomSheet
 
-import androidx.compose.animation.core.AnimationSpec
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetDefaults
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.SwipeableDefaults
-import androidx.compose.material.contentColorFor
-import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
@@ -29,7 +27,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.core.Screen
 import cafe.adriel.voyager.navigator.core.Stack
-import cafe.adriel.voyager.navigator.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.navigator.Navigator
 import cafe.adriel.voyager.navigator.navigator.compositionUniqueId
 import kotlinx.coroutines.CoroutineScope
@@ -40,35 +37,30 @@ typealias BottomSheetNavigatorContent = @Composable (bottomSheetNavigator: Botto
 val LocalBottomSheetNavigator: ProvidableCompositionLocal<BottomSheetNavigator> =
     staticCompositionLocalOf { error("BottomSheetNavigator not initialized") }
 
-@ExperimentalMaterialApi
+@ExperimentalMaterial3Api
 @Composable
 fun BottomSheetNavigator(
     modifier: Modifier = Modifier,
     hideOnBackPress: Boolean = true,
-    scrimColor: Color = ModalBottomSheetDefaults.scrimColor,
+    scrimColor: Color = BottomSheetDefaults.ScrimColor,
     sheetShape: Shape = MaterialTheme.shapes.large,
-    sheetElevation: Dp = ModalBottomSheetDefaults.Elevation,
-    sheetBackgroundColor: Color = MaterialTheme.colors.surface,
+    sheetElevation: Dp = BottomSheetDefaults.Elevation,
+    sheetBackgroundColor: Color = MaterialTheme.colorScheme.surface,
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
-    sheetGesturesEnabled: Boolean = true,
     skipHalfExpanded: Boolean = true,
-    animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec,
     key: String = compositionUniqueId(),
-    sheetContent: BottomSheetNavigatorContent = { CurrentScreen() },
     content: BottomSheetNavigatorContent
 ) {
     var hideBottomSheet by remember { mutableStateOf<BottomSheetNavigator?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
+        skipPartiallyExpanded = skipHalfExpanded,
         confirmValueChange = { state ->
-            if (state == ModalBottomSheetValue.Hidden) {
+            if (state == SheetValue.Hidden) {
                 hideBottomSheet?.hide()
             }
             true
         },
-        skipHalfExpanded = skipHalfExpanded,
-        animationSpec = animationSpec
     )
 
     Navigator(
@@ -84,35 +76,34 @@ fun BottomSheetNavigator(
         }
 
         CompositionLocalProvider(LocalBottomSheetNavigator provides bottomSheetNavigator) {
-            ModalBottomSheetLayout(
+            ModalBottomSheet(
                 modifier = modifier,
                 scrimColor = scrimColor,
                 sheetState = sheetState,
-                sheetShape = sheetShape,
-                sheetElevation = sheetElevation,
-                sheetBackgroundColor = sheetBackgroundColor,
-                sheetContentColor = sheetContentColor,
-                sheetGesturesEnabled = sheetGesturesEnabled,
-                sheetContent = {
+                shape = sheetShape,
+                tonalElevation = sheetElevation,
+                containerColor = sheetBackgroundColor,
+                contentColor = sheetContentColor,
+                onDismissRequest = {
+                    hideBottomSheet?.hide()
+                },
+                content = {
                     BackHandler(enabled = sheetState.isVisible) {
                         if (bottomSheetNavigator.pop().not() && hideOnBackPress) {
                             bottomSheetNavigator.hide()
                         }
                     }
-                    sheetContent(bottomSheetNavigator)
-                },
-                content = {
                     content(bottomSheetNavigator)
-                }
+                },
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 class BottomSheetNavigator internal constructor(
     private val navigator: Navigator,
-    private val sheetState: ModalBottomSheetState,
+    private val sheetState: SheetState,
     private val coroutineScope: CoroutineScope
 ) : Stack<Screen> by navigator {
 

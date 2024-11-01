@@ -14,7 +14,7 @@ object Dependencies {
     val composeUi = "androidx.compose.ui:ui:${Versions.compose_version}"
     val composeTooling = "androidx.compose.ui:ui-tooling:${Versions.compose_version}"
     val composeFoundation = "androidx.compose.foundation:foundation:${Versions.compose_version}"
-    val composeMaterial = "androidx.compose.material:material:${Versions.compose_version}"
+    val composeMaterial = "androidx.compose.material3:material3:${Versions.compose_material_version}"
     val composeActivity = "androidx.activity:activity-compose:${Versions.compose_activity_version}"
     val composeLifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-compose:${Versions.compose_lifecycle_runtime_version}"
 
