@@ -100,7 +100,7 @@ fun BottomSheetNavigator(
             )
         }
 
-        content()
+        content(bottomSheetNavigator)
     }
 }
 
