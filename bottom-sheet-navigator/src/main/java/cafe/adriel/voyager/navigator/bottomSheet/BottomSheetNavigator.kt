@@ -9,6 +9,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -69,7 +70,7 @@ fun BottomSheetNavigator(
         CompositionLocalProvider(LocalBottomSheetNavigator provides bottomSheetNavigator) {
             content(bottomSheetNavigator)
 
-            if (sheetState.isVisible) {
+            if (sheetState.targetValue != sheetState.currentValue || sheetState.currentValue == SheetValue.Expanded) {
                 ModalBottomSheet(
                     modifier = modifier,
                     scrimColor = scrimColor,
@@ -132,7 +133,6 @@ private object HiddenBottomSheetScreen : Screen {
 internal fun BottomSheetNavigatorPreview(
     modifier: Modifier = Modifier
 ) {
-
     BottomSheetNavigator(
         content = {
             val bsNavigator = LocalBottomSheetNavigator.current
