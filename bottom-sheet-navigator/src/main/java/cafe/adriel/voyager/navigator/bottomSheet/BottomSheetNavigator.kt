@@ -3,11 +3,14 @@ package cafe.adriel.voyager.navigator.bottomSheet
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -61,6 +64,9 @@ fun BottomSheetNavigator(
         key = key
     ) { navigator ->
         var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+        val sheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = skipHalfExpanded,
+        )
         val coroutineScope = rememberCoroutineScope()
         val bottomSheetNavigator = remember(
             navigator,
@@ -68,9 +74,7 @@ fun BottomSheetNavigator(
         ) {
             BottomSheetNavigator(
                 navigator = navigator,
-                isBottomSheetOpen = {
-                    openBottomSheet
-                },
+                sheetState = sheetState,
                 onOpenBottomSheet = { open ->
                     openBottomSheet = open
                 },
@@ -85,9 +89,7 @@ fun BottomSheetNavigator(
                 ModalBottomSheet(
                     modifier = modifier,
                     scrimColor = scrimColor,
-                    sheetState = rememberModalBottomSheetState(
-                        skipPartiallyExpanded = skipHalfExpanded,
-                    ),
+                    sheetState = sheetState,
                     shape = sheetShape,
                     tonalElevation = sheetElevation,
                     containerColor = sheetBackgroundColor,
@@ -105,15 +107,16 @@ fun BottomSheetNavigator(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 class BottomSheetNavigator internal constructor(
     private val navigator: Navigator,
-    private val isBottomSheetOpen: () -> Boolean,
+    private val sheetState: SheetState,
     private val onOpenBottomSheet: (Boolean) -> Unit,
     private val coroutineScope: CoroutineScope
 ) : Stack<Screen> by navigator {
 
     val isVisible: Boolean
-        get() = isBottomSheetOpen()
+        get() = sheetState.isVisible
 
     fun show(screen: Screen) {
         coroutineScope.launch {
@@ -124,6 +127,8 @@ class BottomSheetNavigator internal constructor(
 
     fun hide() {
         coroutineScope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
             onOpenBottomSheet(false)
             replaceAll(HiddenBottomSheetScreen)
         }
@@ -161,12 +166,21 @@ internal fun BottomSheetNavigatorPreview(
 
                                 @Composable
                                 override fun Content() {
-                                    Column {
-                                        (0..100).forEach {
+                                    Column(
+                                        modifier = Modifier.verticalScroll(rememberScrollState())
+                                    ) {
+                                        (0..30).forEach {
                                             Text(
                                                 it.toString(),
                                                 color = Color.Green
                                             )
+                                        }
+                                        Button(
+                                            onClick = {
+                                                bsNavigator.hide()
+                                            }
+                                        ) {
+                                            Text("dismiss")
                                         }
                                     }
                                 }
