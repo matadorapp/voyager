@@ -8,16 +8,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,35 +55,46 @@ fun BottomSheetNavigator(
     sheetContent: BottomSheetNavigatorContent = { CurrentScreen() },
     content: BottomSheetNavigatorContent
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = skipHalfExpanded,
-    )
-
     Navigator(
         screen = HiddenBottomSheetScreen,
         onBackPressed = null,
         key = key
     ) { navigator ->
-        val bottomSheetNavigator = remember(navigator, sheetState, coroutineScope) {
-            BottomSheetNavigator(navigator, sheetState, coroutineScope)
+        var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+        val coroutineScope = rememberCoroutineScope()
+        val bottomSheetNavigator = remember(
+            navigator,
+            coroutineScope
+        ) {
+            BottomSheetNavigator(
+                navigator = navigator,
+                isBottomSheetOpen = {
+                    openBottomSheet
+                },
+                onOpenBottomSheet = { open ->
+                    openBottomSheet = open
+                },
+                coroutineScope = coroutineScope
+            )
         }
 
         CompositionLocalProvider(LocalBottomSheetNavigator provides bottomSheetNavigator) {
             content(bottomSheetNavigator)
 
-            if (sheetState.targetValue != sheetState.currentValue || sheetState.currentValue == SheetValue.Expanded) {
+            if (openBottomSheet) {
                 ModalBottomSheet(
                     modifier = modifier,
                     scrimColor = scrimColor,
-                    sheetState = sheetState,
+                    sheetState = rememberModalBottomSheetState(
+                        skipPartiallyExpanded = skipHalfExpanded,
+                    ),
                     shape = sheetShape,
                     tonalElevation = sheetElevation,
                     containerColor = sheetBackgroundColor,
                     contentColor = sheetContentColor,
                     dragHandle = null,
                     onDismissRequest = {
-                        bottomSheetNavigator.hide()
+                        openBottomSheet = false
                     },
                     content = {
                         sheetContent(bottomSheetNavigator)
@@ -92,29 +105,27 @@ fun BottomSheetNavigator(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 class BottomSheetNavigator internal constructor(
     private val navigator: Navigator,
-    private val sheetState: SheetState,
+    private val isBottomSheetOpen: () -> Boolean,
+    private val onOpenBottomSheet: (Boolean) -> Unit,
     private val coroutineScope: CoroutineScope
 ) : Stack<Screen> by navigator {
 
     val isVisible: Boolean
-        get() = sheetState.isVisible
+        get() = isBottomSheetOpen()
 
     fun show(screen: Screen) {
         coroutineScope.launch {
             replaceAll(screen)
-            sheetState.show()
+            onOpenBottomSheet(true)
         }
     }
 
     fun hide() {
         coroutineScope.launch {
-            if (isVisible) {
-                sheetState.hide()
-                replaceAll(HiddenBottomSheetScreen)
-            }
+            onOpenBottomSheet(false)
+            replaceAll(HiddenBottomSheetScreen)
         }
     }
 }
