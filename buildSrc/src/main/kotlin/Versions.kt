@@ -8,7 +8,7 @@ object Versions {
 
     const val ktx_version = "1.16.0"
 
-    const val hilt_version = "2.51.1"
+    const val hilt_version = "2.56.2"
     const val ksp_version = "2.1.21-2.0.1"
     const val compose_plugin_version = "2.1.21"
 
