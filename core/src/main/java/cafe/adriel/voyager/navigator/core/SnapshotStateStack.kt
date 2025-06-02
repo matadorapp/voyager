@@ -90,7 +90,7 @@ class SnapshotStateStack<Item>(
 
     override fun pop(): Boolean =
         if (canPop) {
-            stateStack.removeLast()
+            stateStack.removeAt(stateStack.lastIndex)
             lastEvent = StackEvent.Pop
             true
         } else {
@@ -112,7 +112,7 @@ class SnapshotStateStack<Item>(
         }
 
         while (canPop && shouldPop()) {
-            stateStack.removeLast()
+            stateStack.removeAt(stateStack.lastIndex)
         }
 
         lastEvent = StackEvent.Pop

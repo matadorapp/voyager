@@ -12,7 +12,7 @@ fun MultipleProvideBeforeScreenContent(
     if (screenLifecycleContentProviders.isNotEmpty()) {
         val copy = screenLifecycleContentProviders.toMutableList()
         RecursiveProvideBeforeScreenContent(
-            screenLifecycleContentProvider = copy.removeFirst(),
+            screenLifecycleContentProvider = copy.removeAt(0),
             provideSaveableState = provideSaveableState,
             content = content,
             nextOrNull = { copy.removeFirstOrNull() }
